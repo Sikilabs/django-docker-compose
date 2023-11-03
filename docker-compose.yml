@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  nginx:
+    build: docker/nginx
+    ports:
+      - $NGINX_REVERSE_PROXY_PORT:80
+    links:
+      - web
+
+  web:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    volumes:
+      - .:/code
+    expose:
+      - 8000
+    depends_on:
+      - db
+
+  db:
+    env_file:
+      - .env
+    build: docker/db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
